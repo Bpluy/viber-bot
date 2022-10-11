@@ -50,7 +50,7 @@ def incoming():
 	return Response(status=200)
 
 def set_webhook(viber):
-	viber.set_webhook('https://mybotwebserver.com:8443/')
+	viber.set_webhook('https://https://bot-testj.herokuapp.com:8443/')
 
 if __name__ == "__main__":
 	scheduler = sched.scheduler(time.time, time.sleep)
