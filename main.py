@@ -4,7 +4,6 @@ from viberbot import Api
 from viberbot.api.bot_configuration import BotConfiguration
 from viberbot.api.messages import VideoMessage
 from viberbot.api.messages.text_message import TextMessage
-import logging
 import json
 
 from viberbot.api.viber_requests import ViberConversationStartedRequest
@@ -41,8 +40,6 @@ def incoming():
         viber.send_messages(viber_request.get_user.id, [
             TextMessage(text="thanks for subscribing!")
         ])
-    elif isinstance(viber_request, ViberFailedRequest):
-        logger.warn("client failed receiving message. failure: {0}".format(viber_request))
 
     return Response(status=200)
 
