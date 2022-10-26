@@ -5,6 +5,7 @@ from viberbot.api.bot_configuration import BotConfiguration
 from viberbot.api.messages import VideoMessage
 from viberbot.api.messages.text_message import TextMessage
 import json
+import module
 
 from viberbot.api.viber_requests import ViberConversationStartedRequest
 from viberbot.api.viber_requests import ViberFailedRequest
@@ -19,6 +20,7 @@ viber = Api(BotConfiguration(
     auth_token='4fe241c73de7dc0b-b7ec515681c531d7-65a29900ef6b1756'
 ))
 
+ma = module.MessageAnalyzer()
 
 @app.route('/', methods=['POST'])
 def incoming():
@@ -32,9 +34,12 @@ def incoming():
 
     if isinstance(viber_request, ViberMessageRequest):
         message = viber_request.message
+        global ma
+        if (ma.UserIsHere(str(viber_request.sender.id)) == False):
+            ma.AddUser(str(viber_request.sender.id))
         # lets echo back
         viber.send_messages(viber_request.sender.id, [
-            message
+            TextMessage(text=ma.CreateMessage(str(viber_request.sender.id), message))
         ])
     elif isinstance(viber_request, ViberSubscribedRequest):
         viber.send_messages(viber_request.get_user.id, [
@@ -45,5 +50,9 @@ def incoming():
 
 if __name__ == "__main__":
     context = ('server.crt', 'server.key')
-    app.run(port=8087)
+    app.run(port=8080)
+
+# ngrok.exe http --host-header=rewrite localhost:8080
+    
+
 
