@@ -38,9 +38,11 @@ def incoming():
         if (ma.UserIsHere(str(viber_request.sender.id)) == False):
             ma.AddUser(str(viber_request.sender.id))
         # lets echo back
-        viber.send_messages(viber_request.sender.id, [
-            TextMessage(text=ma.CreateMessage(str(viber_request.sender.id), message))
-        ])
+        viber.send_messages(viber_request.sender.id, [TextMessage(text=ma.CreateMessage(str(viber_request.sender.id), message))])
+        if (ma.users_stages[str(viber_request.sender.id)] == 'end'):
+            ma.users_stages[str(viber_request.sender.id)] = '0'
+            viber.send_messages(viber_request.sender.id, [TextMessage(text=ma.CreateMessage(str(viber_request.sender.id), message))])
+
     elif isinstance(viber_request, ViberSubscribedRequest):
         viber.send_messages(viber_request.get_user.id, [
             TextMessage(text="thanks for subscribing!")
