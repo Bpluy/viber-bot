@@ -82,7 +82,7 @@ class MessageAnalyzer():
                         'Время прибытия \'{0},№{1}\' на остановку \'{2}\':\n'.format(self.users_info[id][0], self.users_info[id][1], self.users_info[id][2]) +
                         '...'
                         )
-                        self.users_stages[id] = '0'
+                        self.users_stages[id] = 'end'
                         return botMes    
                     else:
                         botMes = (
