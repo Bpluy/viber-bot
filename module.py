@@ -1,7 +1,9 @@
+import csv
 class MessageAnalyzer():   
 
     users_stages = dict()
     users_info = dict()
+    route = dict()
 
     def __init__(self):  
         pass
@@ -16,6 +18,38 @@ class MessageAnalyzer():
             return False
         else:
             return True
+
+    # CreateRouteInfo() заполняет словарь route, в котором Ключ - это строка "номер_тип_направление" (например "29_bus_forward"),
+    # а Значения в словаре представляют из себя двумерный массив, где первый индекс - это номер остановки по порядку, а второй определённые её характеристики
+    def CreateRouteInfo(self):
+        routeFile = open('Viber/route.csv', newline='')
+        routeReader = csv.reader(routeFile, delimiter=';', quoting=csv.QUOTE_MINIMAL)
+        for route in routeReader:
+            i = 1
+            id = route[0]
+            type1 = route[1]
+            name = route[2]
+            subRoutFile = open('Viber/subroute.csv', newline='')
+            subReader = csv.reader(subRoutFile, delimiter=';', quoting=csv.QUOTE_MINIMAL)
+            for subRoute in subReader:
+                if (subRoute[0] == id):
+                    direction = ""
+                    if (i == 1): 
+                        direction = "forward"
+                        i += 1
+                    else: 
+                        direction = "backward"
+                    self.route["{0}_{1}_{2}".format(name, type1, direction)] = []
+                    ostanovki = subRoute[2].split(',')
+                    for ost in ostanovki:
+                        stopFile = open('Viber/stop.csv', newline='')
+                        stopReader = csv.reader(stopFile, delimiter=';', quoting=csv.QUOTE_MINIMAL)
+                        for stop in stopReader:
+                            if(ost == stop[0]): self.route["{0}_{1}_{2}".format(name, type1, direction)].append([stop[0], stop[1], stop[2]]) 
+                        stopFile.close()
+            subRoutFile.close()        
+        routeFile.close()
+        pass
 
     def CreateMessage(self, id: str, userMes):
         if (not(userMes._message_type == "text")):
