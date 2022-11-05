@@ -21,15 +21,13 @@ viber = Api(BotConfiguration(
 ))
 
 ma = module.MessageAnalyzer()
+ma.CreateRouteInfo()
 
 @app.route('/', methods=['POST'])
 def incoming():
-    #logger.debug("received request. post data: {0}".format(request.get_data()))
-    # every viber message is signed, you can verify the signature using this method
     if not viber.verify_signature(request.get_data(), request.headers.get('X-Viber-Content-Signature')):
         return Response(status=403)
 
-    # this library supplies a simple way to receive a request object
     viber_request = viber.parse_request(request.get_data())
 
     if isinstance(viber_request, ViberMessageRequest):
@@ -37,7 +35,7 @@ def incoming():
         global ma
         if (ma.UserIsHere(str(viber_request.sender.id)) == False):
             ma.AddUser(str(viber_request.sender.id))
-        # lets echo back
+            
         viber.send_messages(viber_request.sender.id, [TextMessage(text=ma.CreateMessage(str(viber_request.sender.id), message))])
         if (ma.users_stages[str(viber_request.sender.id)] == 'end'):
             ma.users_stages[str(viber_request.sender.id)] = '0'
